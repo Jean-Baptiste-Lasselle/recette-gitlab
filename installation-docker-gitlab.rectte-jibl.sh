@@ -12,16 +12,20 @@ sudo systemctl start docker
 #########################################							ENV								##########################################
 ##############################################################################################################################################
 # --------------------------------------------------------------------------------------------------------------------------------------------
-GITLAB_INSTANCE_NUMBER=7
+# - Variables d'environnement héritées de "operations.sh":
+#                >>>   export ADRESSE_IP_SRV_GITLAB
+# --------------------------------------------------------------------------------------------------------------------------------------------
+GITLAB_INSTANCE_NUMBER=1
 # --------------------------------------------------------------------------------------------------------------------------------------------
 #														RESEAU-HOTE-DOCKER																	 #
 # --------------------------------------------------------------------------------------------------------------------------------------------
 # [SEGMENT-IP alloués par DHCP bytes: 192.168.1.123 => 192.168.1.153]
-ADRESSE_IP_LINUX_NET_INTERFACE_1=192.168.1.123
-ADRESSE_IP_LINUX_NET_INTERFACE_2=192.168.1.124
-ADRESSE_IP_LINUX_NET_INTERFACE_3=192.168.1.125
-ADRESSE_IP_LINUX_NET_INTERFACE_4=192.168.1.126
+# ADRESSE_IP_LINUX_NET_INTERFACE_1=192.168.1.123
+# ADRESSE_IP_LINUX_NET_INTERFACE_2=192.168.1.124
+# ADRESSE_IP_LINUX_NET_INTERFACE_3=192.168.1.125
+# ADRESSE_IP_LINUX_NET_INTERFACE_4=192.168.1.126
 # --------------------------------------------------------------------------------------------------------------------------------------------
+
 #			MAPPING des répertoires d'installation de gitlab dans les conteneurs DOCKER, avec des répertoires de l'hôte DOCKER				 #
 # --------------------------------------------------------------------------------------------------------------------------------------------
 # 
@@ -52,10 +56,10 @@ sudo mkdir -p $CONTENEUR_GITLAB_MAPPING_HOTE_LOG_DIR
 # Installation de l'instance gitlab dans un conteneur, à partir de l'image officielle :
 # https://docs.gitlab.com/omnibus/docker/README.html
 # --------------------------------------------------------------------------------------------------------------------------------------------
-# ce conteneur docker est lié à l'interface réseau d'adresse IP [$ADRESSE_IP_LINUX_NET_INTERFACE_3]:
+# ce conteneur docker est lié à l'interface réseau d'adresse IP [$ADRESSE_IP_SRV_GITLAB]:
 # ==>> Les ports ouverts avec loption --publish seront accessibles uniquement par cette adresse IP
 #
-sudo docker run --detach --hostname gitlab.$GITLAB_INSTANCE_NUMBER.kytes.io --publish $ADRESSE_IP_LINUX_NET_INTERFACE_3:4433:443 --publish $ADRESSE_IP_LINUX_NET_INTERFACE_3:8080:80 --publish 2227:22 --name conteneur-kytes.io.gitlab.$GITLAB_INSTANCE_NUMBER --restart always --volume $CONTENEUR_GITLAB_MAPPING_HOTE_CONFIG_DIR:$GITLAB_CONFIG_DIR --volume $CONTENEUR_GITLAB_MAPPING_HOTE_LOG_DIR:$GITLAB_LOG_DIR --volume $CONTENEUR_GITLAB_MAPPING_HOTE_DATA_DIR:$GITLAB_DATA_DIR gitlab/gitlab-ce:latest
+sudo docker run --detach --hostname gitlab.$GITLAB_INSTANCE_NUMBER.kytes.io --publish $ADRESSE_IP_SRV_GITLAB:4433:443 --publish $ADRESSE_IP_SRV_GITLAB:8080:80 --publish 2227:22 --name conteneur-kytes.io.gitlab.$GITLAB_INSTANCE_NUMBER --restart always --volume $CONTENEUR_GITLAB_MAPPING_HOTE_CONFIG_DIR:$GITLAB_CONFIG_DIR --volume $CONTENEUR_GITLAB_MAPPING_HOTE_LOG_DIR:$GITLAB_LOG_DIR --volume $CONTENEUR_GITLAB_MAPPING_HOTE_DATA_DIR:$GITLAB_DATA_DIR gitlab/gitlab-ce:latest
 
 
 ##########################################################################################
@@ -81,7 +85,7 @@ sudo docker run --detach --hostname gitlab.$GITLAB_INSTANCE_NUMBER.kytes.io --pu
 # # + bytes.factory artifactory-node
 # jenkins.$JENKINS_INSTANCE_NUMBER.bytes.com $ADRESSE_IP_LINUX_NET_INTERFACE_2
 # # + bytes.factory gitlab-node ---------------------------------------------------------------------------- >> celui-là c'est le noeud gitlab
-# gitlab.$GITLAB_INSTANCE_NUMBER.bytes.com $ADRESSE_IP_LINUX_NET_INTERFACE_3
+# gitlab.$GITLAB_INSTANCE_NUMBER.bytes.com $ADRESSE_IP_SRV_GITLAB
 # ----------------------------------------------------------------------------------------
 
 
