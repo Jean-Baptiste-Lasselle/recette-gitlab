@@ -42,6 +42,7 @@ demander_addrIP () {
 #########################################							OPS								##########################################
 ##############################################################################################################################################
 # --------------------------------------------------------------------------------------------------------------------------------------------
+demander_addrIP ()
 sudo chmod +x ./docker-EASE-SPACE-BARE-METAL-SETUP.sh
 sudo chmod +x ./installation-docker-gitlab.rectte-jibl.sh
 ./docker-EASE-SPACE-BARE-METAL-SETUP.sh && ./installation-docker-gitlab.rectte-jibl.sh
