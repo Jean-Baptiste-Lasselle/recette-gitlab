@@ -1,10 +1,4 @@
-# installation de Docker sur centos 7
-																						
-# update CentOS 7
-sudo yum clean all -y && sudo yum update -y
-# DOCKER EASE BARE-METAL-INSTALL - CentOS 7
-sudo systemctl stop docker
-sudo systemctl start docker
+# Docker sur centos 7
 
 
 # --------------------------------------------------------------------------------------------------------------------------------------------
@@ -43,48 +37,73 @@ export REP_GESTION_CONTENEURS_DOCKER=/conteneurs-docker
 CONTENEUR_GITLAB_MAPPING_HOTE_CONFIG_DIR=$REP_GESTION_CONTENEURS_DOCKER/noeud-gitlab-$GITLAB_INSTANCE_NUMBER/config
 CONTENEUR_GITLAB_MAPPING_HOTE_DATA_DIR=$REP_GESTION_CONTENEURS_DOCKER/noeud-gitlab-$GITLAB_INSTANCE_NUMBER/data
 CONTENEUR_GITLAB_MAPPING_HOTE_LOG_DIR=$REP_GESTION_CONTENEURS_DOCKER/noeud-gitlab-$GITLAB_INSTANCE_NUMBER/logs
-# - création des répertoires associés
-sudo rm -rf $REP_GESTION_CONTENEURS_DOCKER
+
+export REP_BCKUP
+# export OPSTIMESTAMP=`date +"%d-%m-%Y-time-%Hh-%Mm-%Ss"`
+export REP_BCKUP_CONTENEURS_DOCKER=$REP_GESTION_CONTENEURS_DOCKER/bckups
+# export REP_BCKUP_COURANT=$REP_GESTION_CONTENEURS_DOCKER/bckups/$OPSTIMESTAMP
+
+# rm -rf $REP_BCKUP_COURANT
+# mkdir -p $REP_BCKUP_COURANT/log
+# mkdir -p $REP_BCKUP_COURANT/data
+# mkdir -p $REP_BCKUP_COURANT/config
+
+# TODO => demander interactivement à l'utilisateur le nom du conteneur docker à backup/restore ### DOTI AUSSI DEVENIR VARIBBE D'ENVIRONNEMENT
+export NOM_CONTENEUR_DOCKER=conteneur-kytes.io.gitlab.$GITLAB_INSTANCE_NUMBER
+
+##############################################################################################################################################
+
+# --------------------------------------------------------------------------------------------------------------------------------------------
+##############################################################################################################################################
+#########################################							FONCTIONS						##########################################
+##############################################################################################################################################
+# --------------------------------------------------------------------------------------------------------------------------------------------
+
+demander_emplacement_bckup () {
+
+	echo "Dans le répertoire [$REP_BCKUP_CONTENEURS_DOCKER], Quel est le "
+	echo "nom du répertoire du backup sur lequel baser ce restore?"
+	echo "-"
+	echo "C'est l'un des suivants:"
+	echo " "
+	ll $REP_GESTION_CONTENEURS_DOCKER
+	echo " "
+	echo " Part défaut, le répertoire de backup le plus récent sera utilisé, soit:"
+	echo " "
+	ls -t $REP_GESTION_CONTENEURS_DOCKER | head -1
+	echo " "
+	read REP_BCKUP_CHOISIT
+	if [ "x$REP_BCKUP_CHOISIT" = "x" ]; then
+       REP_BCKUP_CHOISIT=$(ls -t $REP_GESTION_CONTENEURS_DOCKER | head -1)
+	fi
+	
+	REP_BCKUP=$REP_BCKUP_CHOISIT
+	echo " le répertoire de backup qui sera utilisé pour ce backup est: $REP_BCKUP_CHOISIT/$REP_BCKUP";
+}
+
+
+# - hostname:  archiveur-prj-pms.io
+
+# 1./ Le conteneur doit être arrêté, et détruis:
+sudo docker stop $NOM_CONTENEUR_DOCKER
+sudo docker rm $NOM_CONTENEUR_DOCKER
+
+# 2./ On détruis les répertoires du conteneur à backupper, pour les re-créer vierges
+sudo rm -rf $CONTENEUR_GITLAB_MAPPING_HOTE_CONFIG_DIR
+sudo rm -rf $CONTENEUR_GITLAB_MAPPING_HOTE_DATA_DIR
+sudo rm -rf $CONTENEUR_GITLAB_MAPPING_HOTE_LOG_DIR
 sudo mkdir -p $CONTENEUR_GITLAB_MAPPING_HOTE_CONFIG_DIR
 sudo mkdir -p $CONTENEUR_GITLAB_MAPPING_HOTE_DATA_DIR
 sudo mkdir -p $CONTENEUR_GITLAB_MAPPING_HOTE_LOG_DIR
-##############################################################################################################################################
 
-# - le fichier "/etc/hostname" ne doit contenir que la seule ligne suivante:
-# 192.168.1.32   archiveur-prj-pms.io
-# - exécuter:
-# sudo hostname -F /etc/hostname
-# - à ajouter en fin de fichier "/etc/hosts":
-# 192.168.1.32   archiveur-prj-pms.io
+# 3./ On copie le backup 
+# Pourquoi sudo? parce que l'utilisateur réalisant le backup, n'est pas forcément doté des droits nécessaires pour copier les fichiers exploités par le process gitlab.
+# Voir comissionner des utilisateurs linux plus fins.
+sudo cp -Rf $REP_BCKUP_CHOISIT/$REP_BCKUP/config $CONTENEUR_GITLAB_MAPPING_HOTE_CONFIG_DIR/*
+sudo cp -Rf $REP_BCKUP_CHOISIT/$REP_BCKUP/log $CONTENEUR_GITLAB_MAPPING_HOTE_LOG_DIR/*
+sudo cp -Rf $REP_BCKUP_CHOISIT/$REP_BCKUP/data $CONTENEUR_GITLAB_MAPPING_HOTE_DATA_DIR/*
 
-
-
-# --------------------------------------------------------------------------------------------------------------------------------------------
-# -----		Ce qui donne la sortie standard:
-# --------------------------------------------------------------------------------------------------------------------------------------------
-# [jibl@pc-136 ~]$ sudo vim /etc/hostname
-# [sudo] password for jibl:
-# sudo: vim: command not found
-# [jibl@pc-136 ~]$ sudo vi /etc/hostname
-# [jibl@pc-136 ~]$ sudo vi /etc/hostname
-# [jibl@pc-136 ~]$ sudo vi /etc/hostname
-# [jibl@pc-136 ~]$ sudo hostname -F /etc/hostname
-# [jibl@pc-136 ~]$ echo $HOSTNAME
-# pc-136.home
-# [jibl@pc-136 ~]$ sudo vi /etc/hosts
-# [jibl@pc-136 ~]$ echo $HOSTNAME
-# pc-136.home
-# [jibl@pc-136 ~]$ hostname --short
-# archiveur
-# [jibl@pc-136 ~]$ hostname --domain
-# prj.pms
-# [jibl@pc-136 ~]$  hostname --fqdn
-# archiveur-prj-pms.io
-# [jibl@pc-136 ~]$ hostname --ip-address
-# 192.168.1.32
-# [jibl@pc-136 ~]$
-# --------------------------------------------------------------------------------------------------------------------------------------------
-
+# 4./ On relance un conteneur neuf, en liant ses volumes sur les répertoires backuppés.
 
 
 # --------------------------------------------------------------------------------------------------------------------------------------------
@@ -94,10 +113,11 @@ sudo mkdir -p $CONTENEUR_GITLAB_MAPPING_HOTE_LOG_DIR
 # ce conteneur docker est lié à l'interface réseau d'adresse IP [$ADRESSE_IP_SRV_GITLAB]:
 # ==>> Les ports ouverts avec loption --publish seront accessibles uniquement par cette adresse IP
 #
-# sudo docker run --detach --hostname gitlab.$GITLAB_INSTANCE_NUMBER.kytes.io --publish $ADRESSE_IP_SRV_GITLAB:4433:443 --publish $ADRESSE_IP_SRV_GITLAB:8080:80 --publish 2227:22 --name conteneur-kytes.io.gitlab.$GITLAB_INSTANCE_NUMBER --restart always --volume $CONTENEUR_GITLAB_MAPPING_HOTE_CONFIG_DIR:$GITLAB_CONFIG_DIR --volume $CONTENEUR_GITLAB_MAPPING_HOTE_LOG_DIR:$GITLAB_LOG_DIR --volume $CONTENEUR_GITLAB_MAPPING_HOTE_DATA_DIR:$GITLAB_DATA_DIR gitlab/gitlab-ce:latest
+# sudo docker run --detach --hostname gitlab.$GITLAB_INSTANCE_NUMBER.kytes.io --publish $ADRESSE_IP_SRV_GITLAB:4433:443 --publish $ADRESSE_IP_SRV_GITLAB:8080:80 --publish 2227:22 --name $NOM_CONTENEUR_DOCKER --restart always --volume $CONTENEUR_GITLAB_MAPPING_HOTE_CONFIG_DIR:$GITLAB_CONFIG_DIR --volume $CONTENEUR_GITLAB_MAPPING_HOTE_LOG_DIR:$GITLAB_LOG_DIR --volume $CONTENEUR_GITLAB_MAPPING_HOTE_DATA_DIR:$GITLAB_DATA_DIR gitlab/gitlab-ce:latest
 # Mais maintenant, j'utilise le nom d'hôte de l'OS, pour régler la question du nom de domaine ppour accéder à l'instance gitlab en mode Web.
 # export NOMDHOTE=archiveur-prj-pms.io
-sudo docker run --detach --hostname $HOSTNAME --publish $ADRESSE_IP_SRV_GITLAB:433:443 --publish $ADRESSE_IP_SRV_GITLAB:80:80 --publish 2227:22 --name conteneur-kytes.io.gitlab.$GITLAB_INSTANCE_NUMBER --restart always --volume $CONTENEUR_GITLAB_MAPPING_HOTE_CONFIG_DIR:$GITLAB_CONFIG_DIR --volume $CONTENEUR_GITLAB_MAPPING_HOTE_LOG_DIR:$GITLAB_LOG_DIR --volume $CONTENEUR_GITLAB_MAPPING_HOTE_DATA_DIR:$GITLAB_DATA_DIR gitlab/gitlab-ce:latest
+sudo docker run --detach --hostname $HOSTNAME --publish $ADRESSE_IP_SRV_GITLAB:433:443 --publish $ADRESSE_IP_SRV_GITLAB:80:80 --publish 2227:22 --name $NOM_CONTENEUR_DOCKER --restart always --volume $CONTENEUR_GITLAB_MAPPING_HOTE_CONFIG_DIR:$GITLAB_CONFIG_DIR --volume $CONTENEUR_GITLAB_MAPPING_HOTE_LOG_DIR:$GITLAB_LOG_DIR --volume $CONTENEUR_GITLAB_MAPPING_HOTE_DATA_DIR:$GITLAB_DATA_DIR gitlab/gitlab-ce:latest
+
 
 
 

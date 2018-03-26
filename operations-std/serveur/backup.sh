@@ -1,10 +1,4 @@
-# installation de Docker sur centos 7
-																						
-# update CentOS 7
-sudo yum clean all -y && sudo yum update -y
-# DOCKER EASE BARE-METAL-INSTALL - CentOS 7
-sudo systemctl stop docker
-sudo systemctl start docker
+# Docker sur centos 7
 
 
 # --------------------------------------------------------------------------------------------------------------------------------------------
@@ -44,47 +38,13 @@ CONTENEUR_GITLAB_MAPPING_HOTE_CONFIG_DIR=$REP_GESTION_CONTENEURS_DOCKER/noeud-gi
 CONTENEUR_GITLAB_MAPPING_HOTE_DATA_DIR=$REP_GESTION_CONTENEURS_DOCKER/noeud-gitlab-$GITLAB_INSTANCE_NUMBER/data
 CONTENEUR_GITLAB_MAPPING_HOTE_LOG_DIR=$REP_GESTION_CONTENEURS_DOCKER/noeud-gitlab-$GITLAB_INSTANCE_NUMBER/logs
 # - création des répertoires associés
-sudo rm -rf $REP_GESTION_CONTENEURS_DOCKER
-sudo mkdir -p $CONTENEUR_GITLAB_MAPPING_HOTE_CONFIG_DIR
-sudo mkdir -p $CONTENEUR_GITLAB_MAPPING_HOTE_DATA_DIR
-sudo mkdir -p $CONTENEUR_GITLAB_MAPPING_HOTE_LOG_DIR
+# sudo rm -rf $REP_GESTION_CONTENEURS_DOCKER
+# sudo mkdir -p $CONTENEUR_GITLAB_MAPPING_HOTE_CONFIG_DIR
+# sudo mkdir -p $CONTENEUR_GITLAB_MAPPING_HOTE_DATA_DIR
+# sudo mkdir -p $CONTENEUR_GITLAB_MAPPING_HOTE_LOG_DIR
 ##############################################################################################################################################
 
-# - le fichier "/etc/hostname" ne doit contenir que la seule ligne suivante:
-# 192.168.1.32   archiveur-prj-pms.io
-# - exécuter:
-# sudo hostname -F /etc/hostname
-# - à ajouter en fin de fichier "/etc/hosts":
-# 192.168.1.32   archiveur-prj-pms.io
-
-
-
-# --------------------------------------------------------------------------------------------------------------------------------------------
-# -----		Ce qui donne la sortie standard:
-# --------------------------------------------------------------------------------------------------------------------------------------------
-# [jibl@pc-136 ~]$ sudo vim /etc/hostname
-# [sudo] password for jibl:
-# sudo: vim: command not found
-# [jibl@pc-136 ~]$ sudo vi /etc/hostname
-# [jibl@pc-136 ~]$ sudo vi /etc/hostname
-# [jibl@pc-136 ~]$ sudo vi /etc/hostname
-# [jibl@pc-136 ~]$ sudo hostname -F /etc/hostname
-# [jibl@pc-136 ~]$ echo $HOSTNAME
-# pc-136.home
-# [jibl@pc-136 ~]$ sudo vi /etc/hosts
-# [jibl@pc-136 ~]$ echo $HOSTNAME
-# pc-136.home
-# [jibl@pc-136 ~]$ hostname --short
-# archiveur
-# [jibl@pc-136 ~]$ hostname --domain
-# prj.pms
-# [jibl@pc-136 ~]$  hostname --fqdn
-# archiveur-prj-pms.io
-# [jibl@pc-136 ~]$ hostname --ip-address
-# 192.168.1.32
-# [jibl@pc-136 ~]$
-# --------------------------------------------------------------------------------------------------------------------------------------------
-
+# - hostname:  archiveur-prj-pms.io
 
 
 # --------------------------------------------------------------------------------------------------------------------------------------------
@@ -97,10 +57,22 @@ sudo mkdir -p $CONTENEUR_GITLAB_MAPPING_HOTE_LOG_DIR
 # sudo docker run --detach --hostname gitlab.$GITLAB_INSTANCE_NUMBER.kytes.io --publish $ADRESSE_IP_SRV_GITLAB:4433:443 --publish $ADRESSE_IP_SRV_GITLAB:8080:80 --publish 2227:22 --name conteneur-kytes.io.gitlab.$GITLAB_INSTANCE_NUMBER --restart always --volume $CONTENEUR_GITLAB_MAPPING_HOTE_CONFIG_DIR:$GITLAB_CONFIG_DIR --volume $CONTENEUR_GITLAB_MAPPING_HOTE_LOG_DIR:$GITLAB_LOG_DIR --volume $CONTENEUR_GITLAB_MAPPING_HOTE_DATA_DIR:$GITLAB_DATA_DIR gitlab/gitlab-ce:latest
 # Mais maintenant, j'utilise le nom d'hôte de l'OS, pour régler la question du nom de domaine ppour accéder à l'instance gitlab en mode Web.
 # export NOMDHOTE=archiveur-prj-pms.io
-sudo docker run --detach --hostname $HOSTNAME --publish $ADRESSE_IP_SRV_GITLAB:433:443 --publish $ADRESSE_IP_SRV_GITLAB:80:80 --publish 2227:22 --name conteneur-kytes.io.gitlab.$GITLAB_INSTANCE_NUMBER --restart always --volume $CONTENEUR_GITLAB_MAPPING_HOTE_CONFIG_DIR:$GITLAB_CONFIG_DIR --volume $CONTENEUR_GITLAB_MAPPING_HOTE_LOG_DIR:$GITLAB_LOG_DIR --volume $CONTENEUR_GITLAB_MAPPING_HOTE_DATA_DIR:$GITLAB_DATA_DIR gitlab/gitlab-ce:latest
+# sudo docker run --detach --hostname $HOSTNAME --publish $ADRESSE_IP_SRV_GITLAB:433:443 --publish $ADRESSE_IP_SRV_GITLAB:80:80 --publish 2227:22 --name conteneur-kytes.io.gitlab.$GITLAB_INSTANCE_NUMBER --restart always --volume $CONTENEUR_GITLAB_MAPPING_HOTE_CONFIG_DIR:$GITLAB_CONFIG_DIR --volume $CONTENEUR_GITLAB_MAPPING_HOTE_LOG_DIR:$GITLAB_LOG_DIR --volume $CONTENEUR_GITLAB_MAPPING_HOTE_DATA_DIR:$GITLAB_DATA_DIR gitlab/gitlab-ce:latest
+export OPSTIMESTAMP=`date +"%d-%m-%Y-time-%Hh-%Mm-%Ss"`
+export REP_BCKUP_CONTENEURS_DOCKER=$REP_GESTION_CONTENEURS_DOCKER/bckups
+export REP_BCKUP_COURANT=$REP_GESTION_CONTENEURS_DOCKER/bckups/$OPSTIMESTAMP
 
+rm -rf $REP_BCKUP_COURANT
+mkdir -p $REP_BCKUP_COURANT/log
+mkdir -p $REP_BCKUP_COURANT/data
+mkdir -p $REP_BCKUP_COURANT/config
+# Pourquoi sudo? parce que l'utilisateur réalisant le backup, n'est pas forcément doté des droits nécessaires pour copier les fichiers exploités par le process gitlab.
+# Voir comissionner des utilisateurs linux plus fins.
+sudo cp -Rf $CONTENEUR_GITLAB_MAPPING_HOTE_CONFIG_DIR/* $REP_BCKUP_COURANT/config
+sudo cp -Rf $CONTENEUR_GITLAB_MAPPING_HOTE_LOG_DIR/* $REP_BCKUP_COURANT/log
+sudo cp -Rf $CONTENEUR_GITLAB_MAPPING_HOTE_DATA_DIR/* $REP_BCKUP_COURANT/data
 
-
+echo 
 ##########################################################################################
 #			configuration du nom de domaine pou l'accès à l'instance gitlab   		   	 #  
 ##########################################################################################

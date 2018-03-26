@@ -33,7 +33,7 @@ demander_addrIP () {
 	fi
 	
 	ADRESSE_IP_SRV_GITLAB=$ADRESSE_IP_CHOISIE
-	echo " Binding Adresse IP choisi pour le serveur gitlab: $ADRESSE_IP_CHOISIE";
+	echo " Binding Adresse IP choisit pour le serveur gitlab: $ADRESSE_IP_CHOISIE";
 }
 
 
