@@ -9,16 +9,22 @@ et de pouvoir chacun:
 * à la comission, les backups locaux sont faits automatiqueemnt (configurés comme une tâche réccurrente système crontab)
 ```
 # 1./ il faut ajouter la ligne:
-# => pour une fois par nuit: [* 1 * * * /root/backup_script.sh]
-# => pour une toutes les 2 heures: [* */2 * * * /root/backup_script.sh]
-# => pour une toutes les 4 heures: [* */4 * * * /root/backup_script.sh] #comme ça, il suffit que je laisse le serveur en service pendant 4 heures pour être sûr qu'il y ait eu un backup.
-
+# => pour une toutes les 4 heures: [* */4 * * * /root/backup_script.sh]
+#     Ainsi, il suffit de laisser le serveur en service pendant 4 heures pour être sûr qu'il y ait eu un backup.
 # => pour une fois par nuit: [*/5 */1 * * * /root/backup_script.sh]
 # => Toutes les 15 minutes après 7 heures: [5 7 * * * /root/backup_script.sh ]
 # 
 # Au fichier crontab:
 # 
 sudo crontab -e
+
+#    N.B.:
+# => pour une fois par nuit: [* 1 * * * /root/backup_script.sh]
+# => pour une toutes les 2 heures: [* */2 * * * /root/backup_script.sh]
+# => pour une toutes les 4 heures: [* */4 * * * /root/backup_script.sh]
+# => pour une fois par nuit: [*/5 */1 * * * /root/backup_script.sh]
+# => Toutes les 15 minutes après 7 heures: [5 7 * * * /root/backup_script.sh ]
+
 ```
 <!-- # 2./ il faut redémarrer le système? (me souvient plus...) --> 
 
