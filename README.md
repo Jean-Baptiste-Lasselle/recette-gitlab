@@ -21,5 +21,6 @@
 
 ```
 # mkdir doc-pms && cd doc-pms && git clone "" . && sudo chmod +x ./operations.sh && ./operations.sh
+# mkdir doc-pms && cd doc-pms && git clone "https://github.com/Jean-Baptiste-Lasselle/recette-gitlab" . && sudo chmod +x ./operations.sh && ./operations.sh
 
 ```
