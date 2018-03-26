@@ -1,6 +1,28 @@
 # Recette provision instance gitlab rapide
+Cette recette provisionne un pseudo ssystème, qui à l'utilisation se réduits à utiliser des scripts tous situés dans le même répertoire.
 
-# stdpsbckups
+Ce pseudo système permet de créer autant de conteneurs [Gitlab](https://gitlab.io) qu'il y a d'interfaces réseau dans le système sous jacent (supporté pour léinstant: centos 7)dans la même VM, 
+et de pouvoir chacun:
+* faire un backup local
+* faire un backup remote (vers un stockage qui peut être choisit)
+* faire un restore dans une autre VM, ou la même VM
+* à la comission, les backups locaux sont faits automatiqueemnt (configurés comme une tâche réccurrente système crontab)
+```
+# 1./ il faut ajouter la ligne:
+# => pour une fois par nuit: [* 1 * * * /root/backup_script.sh]
+# => pour une toutes les 2 heures: [* */2 * * * /root/backup_script.sh]
+# => pour une toutes les 4 heures: [* */4 * * * /root/backup_script.sh] #comme ça, il suffit que je laisse le serveur en service pendant 4 heures pour être sûr qu'il y ait eu un backup.
+
+# => pour une fois par nuit: [*/5 */1 * * * /root/backup_script.sh]
+# => Toutes les 15 minutes après 7 heures: [5 7 * * * /root/backup_script.sh ]
+# 
+# Au fichier crontab:
+# 
+sudo crontab -e
+```
+<!-- # 2./ il faut redémarrer le système? (me souvient plus...) --> 
+
+# stdopsbckups
 
 * client:
   * save local
@@ -85,7 +107,7 @@ Demander interactivement à l'utilisateur le nom du conteneur docker à backup/r
 
 De la sorte, l'association est déléguée intractivement ou avec avec arguments en ligne de commande:
 
-* si aucun argument n'est passé à `./operations-std/serveur/restore.sh`, il demande interactivement le nom du conteneur docjker, et le chemin de son répertoire dédié (exemple: [`$REP_GESTION_CONTENEURS_DOCKER/noeud-gitlab-$GITLAB_INSTANCE_NUMBER`])
+* si aucun argument n'est passé à `./operations-std/serveur/restore.sh`, il demande interactivement le nom du conteneur docker, et le chemin de son répertoire dédié (exemple: [`$REP_GESTION_CONTENEURS_DOCKER/noeud-gitlab-$GITLAB_INSTANCE_NUMBER`])
 * si un seul argument est passé, alors un message d'erreur est affiché, et l'aide affichée.
 * si deux arguments sont passés, alors:
   * le premier est considéré comme étant le nom du conteneur docker (et alors s'il la commande `docker ps -a` ne renvoie pas une sortie standard contenant le nom du conteneur, une erreur est levée)
