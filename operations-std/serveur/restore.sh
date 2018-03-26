@@ -48,7 +48,45 @@ export REP_BCKUP_CONTENEURS_DOCKER=$REP_GESTION_CONTENEURS_DOCKER/bckups
 # mkdir -p $REP_BCKUP_COURANT/data
 # mkdir -p $REP_BCKUP_COURANT/config
 
-# TODO => demander interactivement à l'utilisateur le nom du conteneur docker à backup/restore ### DOTI AUSSI DEVENIR VARIBBE D'ENVIRONNEMENT
+# TODO => demander interactivement à l'utilisateur le nom du conteneur docker à backup/restore ### DOIT AUSSI DEVENIR VARIABLE D'ENVIRONNEMENT
+# mais d'ailleurs, concrètement, c'est à ce point exact qu'est fait le lien entre les dépendances:
+#           NOM_CONTENEUR_DOCKER <=> noms du répertoire [$REP_GESTION_CONTENEURS_DOCKER/noeud-gitlab-$GITLAB_INSTANCE_NUMBER]
+# Sachant que al règle implicite est que pour chaque service gitlab, un conteneur est créé avec un nom, et un répertoire lui
+# est donné, [$REP_GESTION_CONTENEURS_DOCKER/noeud-gitlab-$GITLAB_INSTANCE_NUMBER], dans lequel on a, pour chaque conteneurs, 5 sous répertoires en arbre:
+# [$REP_GESTION_CONTENEURS_DOCKER]
+#				| 
+#				| 
+# 		[$REP_GESTION_CONTENEURS_DOCKER/noeud-gitlab-$GITLAB_INSTANCE_NUMBER]
+# 											|
+# 											|__ mapping-volumes
+# 											|	   	  |__ data
+# 											|	   	  |__ config
+# 											|	   	  |__ log
+# 											|
+# 											|
+# 											|__ bckups
+# 											|	   |
+# 											|	   |__ unedate/
+# 											|	   |	  |__ data
+# 											|	   |	  |__ config
+# 											|	   |	  |__ log
+# 											|	   |	  |
+# 											|	   |	  |
+# 											|	   |
+# 											|	   |
+# 											|	   |__ uneautredate/
+# 											|	   |	  |__ data
+# 											|	   |	  |__ config
+# 											|	   |	  |__ log
+# 											|	   |	  |
+# 											|	   |	  |
+# 											|	   |
+# 											|	   |
+# 											|	   
+# 											|	      
+#    
+#    
+#    
 export NOM_CONTENEUR_DOCKER=conteneur-kytes.io.gitlab.$GITLAB_INSTANCE_NUMBER
 
 ##############################################################################################################################################
@@ -83,7 +121,7 @@ demander_emplacement_bckup () {
 
 
 # - hostname:  archiveur-prj-pms.io
-
+demander_emplacement_bckup
 # 1./ Le conteneur doit être arrêté, et détruis:
 sudo docker stop $NOM_CONTENEUR_DOCKER
 sudo docker rm $NOM_CONTENEUR_DOCKER
