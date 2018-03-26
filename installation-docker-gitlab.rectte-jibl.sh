@@ -49,7 +49,42 @@ sudo mkdir -p $CONTENEUR_GITLAB_MAPPING_HOTE_CONFIG_DIR
 sudo mkdir -p $CONTENEUR_GITLAB_MAPPING_HOTE_DATA_DIR
 sudo mkdir -p $CONTENEUR_GITLAB_MAPPING_HOTE_LOG_DIR
 ##############################################################################################################################################
+
+# - le fichier "/etc/hostname" ne doit contenir que la seule ligne suivante:
+# 192.168.1.32   archiveur.prj.pms
+# - exécuter:
+# sudo hostname -F /etc/hostname
+# - à ajouter en fin de fichier "/etc/hosts":
+# 192.168.1.32   archiveur.prj.pms
+
+
+
 # --------------------------------------------------------------------------------------------------------------------------------------------
+# -----		Ce qui donne la sortie standard:
+# --------------------------------------------------------------------------------------------------------------------------------------------
+# [jibl@pc-136 ~]$ sudo vim /etc/hostname
+# [sudo] password for jibl:
+# sudo: vim: command not found
+# [jibl@pc-136 ~]$ sudo vi /etc/hostname
+# [jibl@pc-136 ~]$ sudo vi /etc/hostname
+# [jibl@pc-136 ~]$ sudo vi /etc/hostname
+# [jibl@pc-136 ~]$ sudo hostname -F /etc/hostname
+# [jibl@pc-136 ~]$ echo $HOSTNAME
+# pc-136.home
+# [jibl@pc-136 ~]$ sudo vi /etc/hosts
+# [jibl@pc-136 ~]$ echo $HOSTNAME
+# pc-136.home
+# [jibl@pc-136 ~]$ hostname --short
+# archiveur
+# [jibl@pc-136 ~]$ hostname --domain
+# prj.pms
+# [jibl@pc-136 ~]$  hostname --fqdn
+# archiveur.prj.pms
+# [jibl@pc-136 ~]$ hostname --ip-address
+# 192.168.1.32
+# [jibl@pc-136 ~]$
+# --------------------------------------------------------------------------------------------------------------------------------------------
+
 
 
 # --------------------------------------------------------------------------------------------------------------------------------------------
@@ -59,7 +94,11 @@ sudo mkdir -p $CONTENEUR_GITLAB_MAPPING_HOTE_LOG_DIR
 # ce conteneur docker est lié à l'interface réseau d'adresse IP [$ADRESSE_IP_SRV_GITLAB]:
 # ==>> Les ports ouverts avec loption --publish seront accessibles uniquement par cette adresse IP
 #
-sudo docker run --detach --hostname gitlab.$GITLAB_INSTANCE_NUMBER.kytes.io --publish $ADRESSE_IP_SRV_GITLAB:4433:443 --publish $ADRESSE_IP_SRV_GITLAB:8080:80 --publish 2227:22 --name conteneur-kytes.io.gitlab.$GITLAB_INSTANCE_NUMBER --restart always --volume $CONTENEUR_GITLAB_MAPPING_HOTE_CONFIG_DIR:$GITLAB_CONFIG_DIR --volume $CONTENEUR_GITLAB_MAPPING_HOTE_LOG_DIR:$GITLAB_LOG_DIR --volume $CONTENEUR_GITLAB_MAPPING_HOTE_DATA_DIR:$GITLAB_DATA_DIR gitlab/gitlab-ce:latest
+# sudo docker run --detach --hostname gitlab.$GITLAB_INSTANCE_NUMBER.kytes.io --publish $ADRESSE_IP_SRV_GITLAB:4433:443 --publish $ADRESSE_IP_SRV_GITLAB:8080:80 --publish 2227:22 --name conteneur-kytes.io.gitlab.$GITLAB_INSTANCE_NUMBER --restart always --volume $CONTENEUR_GITLAB_MAPPING_HOTE_CONFIG_DIR:$GITLAB_CONFIG_DIR --volume $CONTENEUR_GITLAB_MAPPING_HOTE_LOG_DIR:$GITLAB_LOG_DIR --volume $CONTENEUR_GITLAB_MAPPING_HOTE_DATA_DIR:$GITLAB_DATA_DIR gitlab/gitlab-ce:latest
+# Mais maintenant, j'utilise le nom d'hôte de l'OS, pour régler la question du nom de domaine ppour accéder à l'instance gitlab en mode Web.
+# export NOMDHOTE=archiveur.prj.pms
+sudo docker run --detach --hostname $HOSTNAME --publish $ADRESSE_IP_SRV_GITLAB:4433:443 --publish $ADRESSE_IP_SRV_GITLAB:8080:80 --publish 2227:22 --name conteneur-kytes.io.gitlab.$GITLAB_INSTANCE_NUMBER --restart always --volume $CONTENEUR_GITLAB_MAPPING_HOTE_CONFIG_DIR:$GITLAB_CONFIG_DIR --volume $CONTENEUR_GITLAB_MAPPING_HOTE_LOG_DIR:$GITLAB_LOG_DIR --volume $CONTENEUR_GITLAB_MAPPING_HOTE_DATA_DIR:$GITLAB_DATA_DIR gitlab/gitlab-ce:latest
+
 
 
 ##########################################################################################
