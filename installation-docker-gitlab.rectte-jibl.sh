@@ -16,7 +16,7 @@ GITLAB_INSTANCE_NUMBER=7
 # --------------------------------------------------------------------------------------------------------------------------------------------
 #														RESEAU-HOTE-DOCKER																	 #
 # --------------------------------------------------------------------------------------------------------------------------------------------
-# [SEGMENT-IP alloués par DHCP ease-space: 192.168.1.123 => 192.168.1.153]
+# [SEGMENT-IP alloués par DHCP bytes: 192.168.1.123 => 192.168.1.153]
 ADRESSE_IP_LINUX_NET_INTERFACE_1=192.168.1.123
 ADRESSE_IP_LINUX_NET_INTERFACE_2=192.168.1.124
 ADRESSE_IP_LINUX_NET_INTERFACE_3=192.168.1.125
@@ -74,21 +74,21 @@ sudo docker run --detach --hostname gitlab.$GITLAB_INSTANCE_NUMBER.kytes.io --pu
 # Contenu qui doit être ajouté dans le fichier "/etc/hosts"
 # ----------------------------------------------------------------------------------------
 # # -----------------------------
-# # EASE CI/CD 
+# # BYTES CI/CD 
 # # -----------------------------
-# # + EASE-factory jenkins-node
-# jenkins.$JENKINS_INSTANCE_NUMBER.7zunft.com $ADRESSE_IP_LINUX_NET_INTERFACE_1
-# # + EASE-factory artifactory-node
-# jenkins.$JENKINS_INSTANCE_NUMBER.7zunft.com $ADRESSE_IP_LINUX_NET_INTERFACE_2
-# # + EASE-factory gitlab-node ---------------------------------------------------------------------------- >> celui-là c'est le noeud gitlab
-# gitlab.$GITLAB_INSTANCE_NUMBER.7zunft.com $ADRESSE_IP_LINUX_NET_INTERFACE_3
+# # + kytes.iofactory jenkins-node
+# jenkins.$JENKINS_INSTANCE_NUMBER.bytes.com $ADRESSE_IP_LINUX_NET_INTERFACE_1
+# # + bytes.factory artifactory-node
+# jenkins.$JENKINS_INSTANCE_NUMBER.bytes.com $ADRESSE_IP_LINUX_NET_INTERFACE_2
+# # + bytes.factory gitlab-node ---------------------------------------------------------------------------- >> celui-là c'est le noeud gitlab
+# gitlab.$GITLAB_INSTANCE_NUMBER.bytes.com $ADRESSE_IP_LINUX_NET_INTERFACE_3
 # ----------------------------------------------------------------------------------------
 
 
 # éditer dans le conteneur docker, le fichier "/etc/gitlab/gitlab.rb":
 # sudo docker exec -it gitlab vi /etc/gitlab/gitlab.rb
 # et donner la valeur suivante au paramètre "external_url":
-# external_url "http://gitlab.$GITLAB_INSTANCE_NUMBER.7zunft.com:8080"
+# external_url "http://gitlab.$GITLAB_INSTANCE_NUMBER.bytes.com:8080"
 # autre exemple avec une valeur exemple d'url
 # external_url "http://gitlab.example.com"
 
