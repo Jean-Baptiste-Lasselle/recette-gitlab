@@ -55,7 +55,7 @@ sudo mkdir -p $CONTENEUR_GITLAB_MAPPING_HOTE_LOG_DIR
 # ce conteneur docker est lié à l'interface réseau d'adresse IP [$ADRESSE_IP_LINUX_NET_INTERFACE_3]:
 # ==>> Les ports ouverts avec loption --publish seront accessibles uniquement par cette adresse IP
 #
-sudo docker run --detach --hostname gitlab.$GITLAB_INSTANCE_NUMBER.ease.space --publish $ADRESSE_IP_LINUX_NET_INTERFACE_3:4433:443 --publish $ADRESSE_IP_LINUX_NET_INTERFACE_3:8080:80 --publish 2227:22 --name conteneur-ease-space.gitlab.$GITLAB_INSTANCE_NUMBER --restart always --volume $CONTENEUR_GITLAB_MAPPING_HOTE_CONFIG_DIR:$GITLAB_CONFIG_DIR --volume $CONTENEUR_GITLAB_MAPPING_HOTE_LOG_DIR:$GITLAB_LOG_DIR --volume $CONTENEUR_GITLAB_MAPPING_HOTE_DATA_DIR:$GITLAB_DATA_DIR gitlab/gitlab-ce:latest
+sudo docker run --detach --hostname gitlab.$GITLAB_INSTANCE_NUMBER.kytes.io --publish $ADRESSE_IP_LINUX_NET_INTERFACE_3:4433:443 --publish $ADRESSE_IP_LINUX_NET_INTERFACE_3:8080:80 --publish 2227:22 --name conteneur-kytes.io.gitlab.$GITLAB_INSTANCE_NUMBER --restart always --volume $CONTENEUR_GITLAB_MAPPING_HOTE_CONFIG_DIR:$GITLAB_CONFIG_DIR --volume $CONTENEUR_GITLAB_MAPPING_HOTE_LOG_DIR:$GITLAB_LOG_DIR --volume $CONTENEUR_GITLAB_MAPPING_HOTE_DATA_DIR:$GITLAB_DATA_DIR gitlab/gitlab-ce:latest
 
 
 ##########################################################################################
@@ -77,18 +77,18 @@ sudo docker run --detach --hostname gitlab.$GITLAB_INSTANCE_NUMBER.ease.space --
 # # EASE CI/CD 
 # # -----------------------------
 # # + EASE-factory jenkins-node
-# jenkins.$JENKINS_INSTANCE_NUMBER.ease.space $ADRESSE_IP_LINUX_NET_INTERFACE_1
+# jenkins.$JENKINS_INSTANCE_NUMBER.7zunft.com $ADRESSE_IP_LINUX_NET_INTERFACE_1
 # # + EASE-factory artifactory-node
-# jenkins.$JENKINS_INSTANCE_NUMBER.ease.space $ADRESSE_IP_LINUX_NET_INTERFACE_2
+# jenkins.$JENKINS_INSTANCE_NUMBER.7zunft.com $ADRESSE_IP_LINUX_NET_INTERFACE_2
 # # + EASE-factory gitlab-node ---------------------------------------------------------------------------- >> celui-là c'est le noeud gitlab
-# gitlab.$GITLAB_INSTANCE_NUMBER.ease.space $ADRESSE_IP_LINUX_NET_INTERFACE_3
+# gitlab.$GITLAB_INSTANCE_NUMBER.7zunft.com $ADRESSE_IP_LINUX_NET_INTERFACE_3
 # ----------------------------------------------------------------------------------------
 
 
 # éditer dans le conteneur docker, le fichier "/etc/gitlab/gitlab.rb":
 # sudo docker exec -it gitlab vi /etc/gitlab/gitlab.rb
 # et donner la valeur suivante au paramètre "external_url":
-# external_url "http://gitlab.$GITLAB_INSTANCE_NUMBER.ease.space:8080"
+# external_url "http://gitlab.$GITLAB_INSTANCE_NUMBER.7zunft.com:8080"
 # autre exemple avec une valeur exemple d'url
 # external_url "http://gitlab.example.com"
 
