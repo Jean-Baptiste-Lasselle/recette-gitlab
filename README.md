@@ -15,3 +15,11 @@
   * bakup gtilab data dir
   * restore instance
   * wikis not included, README.md versioned with source code
+  
+  
+* launching ops
+
+```
+# mkdir doc-pms && cd doc-pms && git clone "" . && sudo chmod +x ./operations.sh && ./operations.sh
+
+```
