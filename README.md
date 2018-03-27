@@ -109,6 +109,7 @@ echo " provision-girofle-  TERMINEE - " >> $NOMFICHIERLOG
 #    
 #    => les bckups devront être stockés dans [$REP_GESTION_CONTENEURS_DOCKER/noeud-gitlab-$GITLAB_INSTANCE_NUMBER/bckups]
 #    
+
 ```
 
 * Dépendances entre variables d'env.
@@ -124,8 +125,17 @@ Le fichier `./operations-std/serveur/restore.sh`, est pour le moment le point ex
 export REP_GIROFLE_CONTENEUR_DOCKER=$REP_GESTION_CONTENEURS_DOCKER/noeud-gitlab-$GITLAB_INSTANCE_NUMBER
 ```
 
+Globalement les opératiosn standard utilisent donc 3 variables indépendantes:
 
-* à implémenter:
+```
+ $NOM_CONTENEUR_DOCKER <=> $REP_GIROFLE_CONTENEUR_DOCKER <=> $ADRESSE_IP_DEDIEE_AU_SERVICE_GITLAB
+```
+
+Dans `./operations-std/serveur/restore.sh`, c'est la variable d'envirnnement `$ADRESSE_IP_SRV_GITLAB` qui correspond à `$ADRESSE_IP_DEDIEE_AU_SERVICE_GITLAB`
+
+
+
+* À implémenter:
 
 Demander interactivement à l'utilisateur le nom du conteneur docker à backup/restore, ainsi que le chemin de son répertoire dédié
 
