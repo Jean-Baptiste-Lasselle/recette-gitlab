@@ -22,9 +22,6 @@ et de pouvoir chacun:
 
 # Mode silencieux:
 export PLANIFICATION_DES_BCKUPS="* */4 * * *   $(pwd)/operations-std/serveur/backup.sh"
-rm -f $NOMFICHIERLOG
-touch $NOMFICHIERLOG
-
 rm -f doc-pms/operations-std/serveur/bckup.kytes
 echo "$PLANIFICATION_DES_BCKUPS" >> ./operations-std/serveur/bckup.kytes
 crontab ./operations-std/serveur/bckup.kytes
