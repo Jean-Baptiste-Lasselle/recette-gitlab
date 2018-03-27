@@ -12,18 +12,16 @@ et de pouvoir chacun:
 * à la comission, les backups locaux sont faits automatiqueemnt (configurés comme une tâche réccurrente système crontab):
 ```
 # 1./ il faut ajouter la ligne:
-# => pour une toutes les 4 heures: [* */4 * * * "$(pwd)/operations-std/serveur/backup.sh"]
-#     Ainsi, il suffit de laisser le serveur en service pendant 4 heures pour être sûr qu'il y ait eu un backup.
-# => pour une fois par nuit: [*/5 */1 * * * "$(pwd)/operations-std/serveur/backup.sh"]
-# => Toutes les 15 minutes après 7 heures: [5 7 * * * "$(pwd)/operations-std/serveur/backup.sh" ]
 # 
+# => pour une toutes les 4 heures: [* */4 * * * "$(pwd)/operations-std/serveur/backup.sh"]
+#  
 # Au fichier crontab:
 # 
 
 # Mode manuel: sudo crontab -e
 
+# Mode silencieux:
 export PLANIFICATION_DES_BCKUPS="* */4 * * *   $(pwd)/operations-std/serveur/backup.sh"
-export NOMFICHIERLOG="$(pwd)/provision-girofle.log"
 rm -f $NOMFICHIERLOG
 touch $NOMFICHIERLOG
 
