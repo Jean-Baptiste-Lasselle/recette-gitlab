@@ -69,7 +69,9 @@ sudo chmod +x ./installation-docker-gitlab.rectte-jibl.sh
 # 
 # Mode manuel: sudo crontab -e
 
-export PLANIFICATION_DES_BCKUPS="* */4 * * *   $(pwd)/operations-std/serveur/backup.sh"
+# export PLANIFICATION_DES_BCKUPS="* */4 * * *   $(pwd)/operations-std/serveur/backup.sh"
+# une fois toutes les 3 minutes, pour les tests crontab
+export PLANIFICATION_DES_BCKUPS="3 * * * * $(pwd)/operations-std/serveur/backup.sh"
 
 
 rm -f doc-pms/operations-std/serveur/bckup.kytes
@@ -87,6 +89,7 @@ echo " provision-girofle-  TERMINEE - " >> $NOMFICHIERLOG
 # => pour une toutes les 4 heures: [* */4 * * * "$(pwd)/operations-std/serveur/backup.sh"]
 # => pour une fois par nuit: [*/5 */1 * * * "$(pwd)/operations-std/serveur/backup.sh"]
 # => Toutes les 15 minutes après 7 heures: [5 7 * * * "$(pwd)/operations-std/serveur/backup.sh" ]
+# => Toutes les 3 minutes: ["3 * * * * $(pwd)/operations-std/serveur/backup.sh" ]
 
 
 
