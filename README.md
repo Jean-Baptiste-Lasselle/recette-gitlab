@@ -4,12 +4,12 @@ Cette recette provisionne un pseudo système, qui à l'utilisation se réduits �
 
 J'ai accessoirement baptisé le pseudo-système "[Girofle](#)".
 
-Ce pseudo système permet de créer autant de conteneurs [Gitlab](https://gitlab.io) qu'il y a d'interfaces réseau dans le système sous jacent (supporté pour léinstant: centos 7)dans la même VM, 
-et de pouvoir chacun:
+Ce pseudo système permet de créer autant de conteneurs [Gitlab](https://gitlab.io) qu'il y a d'interfaces réseau dans le système sous jacent (supporté pour l'instant: centos 7) 
+dans la même VM, et de pouvoir pour chacun:
 * faire un backup local
 * faire un backup remote (vers un stockage qui peut être choisit)
 * faire un restore dans une autre VM, ou la même VM
-* à la comission, les backups locaux sont faits automatiqueemnt (configurés comme une tâche réccurrente système crontab):
+* à la comission, les backups locaux sont faits automatiquement (configurés comme une tâche réccurrente système crontab):
 ```
 # 1./ il faut ajouter la ligne:
 # 
@@ -40,8 +40,6 @@ echo " provision-girofle-  TERMINEE - " >> $NOMFICHIERLOG
 
 ```
 <!-- # 2./ il faut redémarrer le système? (me souvient plus...) --> 
-
-
 
 # stdopsbckups
 
