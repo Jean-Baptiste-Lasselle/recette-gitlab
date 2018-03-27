@@ -8,6 +8,8 @@
 # --------------------------------------------------------------------------------------------------------------------------------------------
 # - Variables d'environnement héritées de "operations.sh":
 #                >>>   export ADRESSE_IP_SRV_GITLAB
+# export ADRESSE_IP_SRV_GITLAB=192.168.1.32
+export ADRESSE_IP_SRV_GITLAB
 # --------------------------------------------------------------------------------------------------------------------------------------------
 GITLAB_INSTANCE_NUMBER=1
 # --------------------------------------------------------------------------------------------------------------------------------------------
@@ -29,18 +31,25 @@ GITLAB_INSTANCE_NUMBER=1
 GITLAB_CONFIG_DIR=/etc/gitlab
 GITLAB_DATA_DIR=/var/opt/gitlab
 GITLAB_LOG_DIR=/var/log/gitlab
+
+export NOM_CONTENEUR_DOCKER=conteneur-kytes.io.gitlab.$GITLAB_INSTANCE_NUMBER
 # ---------------------------------------
 # - répertoires  dans l'hôte docker
 # ---------------------------------------
 export REP_GESTION_CONTENEURS_DOCKER=/conteneurs-docker
-# - répertoires associés
-CONTENEUR_GITLAB_MAPPING_HOTE_CONFIG_DIR=$REP_GESTION_CONTENEURS_DOCKER/noeud-gitlab-$GITLAB_INSTANCE_NUMBER/config
-CONTENEUR_GITLAB_MAPPING_HOTE_DATA_DIR=$REP_GESTION_CONTENEURS_DOCKER/noeud-gitlab-$GITLAB_INSTANCE_NUMBER/data
-CONTENEUR_GITLAB_MAPPING_HOTE_LOG_DIR=$REP_GESTION_CONTENEURS_DOCKER/noeud-gitlab-$GITLAB_INSTANCE_NUMBER/logs
+# répertoire dédié au conteneur géré dans cette suite d'opérations
+export REP_GIROFLE_CONTENEUR_DOCKER=$REP_GESTION_CONTENEURS_DOCKER/noeud-gitlab-$GITLAB_INSTANCE_NUMBER
 
+# - répertoires associés
+CONTENEUR_GITLAB_MAPPING_HOTE_CONFIG_DIR=$REP_GIROFLE_CONTENEUR_DOCKER/config
+CONTENEUR_GITLAB_MAPPING_HOTE_DATA_DIR=$REP_GIROFLE_CONTENEUR_DOCKER/data
+CONTENEUR_GITLAB_MAPPING_HOTE_LOG_DIR=$REP_GIROFLE_CONTENEUR_DOCKER/logs
+
+export REP_BCKUP_CONTENEUR_DOCKER=$REP_GIROFLE_CONTENEUR_DOCKER/bckups
+# le nom du répertoire (pas son chemin absolu) dans $REP_BCKUP_CONTENEUR_DOCKER
 export REP_BCKUP
-# export OPSTIMESTAMP=`date +"%d-%m-%Y-time-%Hh-%Mm-%Ss"`
-export REP_BCKUP_CONTENEURS_DOCKER=$REP_GESTION_CONTENEURS_DOCKER/bckups
+
+
 # export REP_BCKUP_COURANT=$REP_GESTION_CONTENEURS_DOCKER/bckups/$OPSTIMESTAMP
 
 # rm -rf $REP_BCKUP_COURANT
@@ -50,13 +59,13 @@ export REP_BCKUP_CONTENEURS_DOCKER=$REP_GESTION_CONTENEURS_DOCKER/bckups
 
 # TODO => demander interactivement à l'utilisateur le nom du conteneur docker à backup/restore ### DOIT AUSSI DEVENIR VARIABLE D'ENVIRONNEMENT
 # mais d'ailleurs, concrètement, c'est à ce point exact qu'est fait le lien entre les dépendances:
-#           NOM_CONTENEUR_DOCKER <=> noms du répertoire [$REP_GESTION_CONTENEURS_DOCKER/noeud-gitlab-$GITLAB_INSTANCE_NUMBER]
+#           NOM_CONTENEUR_DOCKER <=> noms du répertoire [$REP_GIROFLE_CONTENEUR_DOCKER]
 # Sachant que al règle implicite est que pour chaque service gitlab, un conteneur est créé avec un nom, et un répertoire lui
-# est donné, [$REP_GESTION_CONTENEURS_DOCKER/noeud-gitlab-$GITLAB_INSTANCE_NUMBER], dans lequel on a, pour chaque conteneurs, 5 sous répertoires en arbre:
+# est donné, [$REP_GIROFLE_CONTENEUR_DOCKER], dans lequel on a, pour chaque conteneurs, 5 sous répertoires en arbre:
 # [$REP_GESTION_CONTENEURS_DOCKER]
 #				| 
 #				| 
-# 		[$REP_GESTION_CONTENEURS_DOCKER/noeud-gitlab-$GITLAB_INSTANCE_NUMBER]
+# 		[$REP_GIROFLE_CONTENEUR_DOCKER]
 # 											|
 # 											|__ mapping-volumes
 # 											|	   	  |__ data
@@ -87,7 +96,7 @@ export REP_BCKUP_CONTENEURS_DOCKER=$REP_GESTION_CONTENEURS_DOCKER/bckups
 #    
 #    
 #    
-export NOM_CONTENEUR_DOCKER=conteneur-kytes.io.gitlab.$GITLAB_INSTANCE_NUMBER
+
 
 ##############################################################################################################################################
 
@@ -99,27 +108,47 @@ export NOM_CONTENEUR_DOCKER=conteneur-kytes.io.gitlab.$GITLAB_INSTANCE_NUMBER
 
 demander_emplacement_bckup () {
 
-	echo "Dans le répertoire [$REP_BCKUP_CONTENEURS_DOCKER], Quel est le "
+	echo "Dans le répertoire [$REP_BCKUP_CONTENEUR_DOCKER], Quel est le "
 	echo "nom du répertoire du backup sur lequel baser ce restore?"
 	echo "-"
 	echo "C'est l'un des suivants:"
 	echo " "
-	ll $REP_GESTION_CONTENEURS_DOCKER
+	ll $REP_BCKUP_CONTENEUR_DOCKER
 	echo " "
 	echo " Part défaut, le répertoire de backup le plus récent sera utilisé, soit:"
 	echo " "
-	ls -t $REP_GESTION_CONTENEURS_DOCKER | head -1
+	ls -t $REP_BCKUP_CONTENEUR_DOCKER | head -1
 	echo " "
 	read REP_BCKUP_CHOISIT
 	if [ "x$REP_BCKUP_CHOISIT" = "x" ]; then
-       REP_BCKUP_CHOISIT=$(ls -t $REP_GESTION_CONTENEURS_DOCKER | head -1)
+       REP_BCKUP_CHOISIT=$(ls -t $REP_BCKUP_CONTENEUR_DOCKER | head -1)
 	fi
 	
 	REP_BCKUP=$REP_BCKUP_CHOISIT
 	echo " le répertoire de backup qui sera utilisé pour ce backup est: $REP_BCKUP_CHOISIT/$REP_BCKUP";
 }
 
+demander_addrIP () {
 
+	echo "Quelle adresse IP l'instance gitlab restaurée devra-t-elle utiliser?"
+	echo "Cette adresse est à  choisir parmi:"
+	echo " "
+	ip addr|grep "inet"|grep -v "inet6"|grep "enp\|wlan"
+	echo " "
+	read ADRESSE_IP_CHOISIE
+	if [ "x$ADRESSE_IP_CHOISIE" = "x" ]; then
+       ADRESSE_IP_CHOISIE=0.0.0.0
+	fi
+	
+	ADRESSE_IP_SRV_GITLAB=$ADRESSE_IP_CHOISIE
+	echo " Binding Adresse IP choisit pour le serveur gitlab: $ADRESSE_IP_CHOISIE";
+}
+
+# --------------------------------------------------------------------------------------------------------------------------------------------
+##############################################################################################################################################
+#########################################							OPERATIONS						##########################################
+##############################################################################################################################################
+# --------------------------------------------------------------------------------------------------------------------------------------------
 # - hostname:  archiveur-prj-pms.io
 demander_emplacement_bckup
 # 1./ Le conteneur doit être arrêté, et détruis:

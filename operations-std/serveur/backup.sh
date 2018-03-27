@@ -18,11 +18,13 @@ GITLAB_INSTANCE_NUMBER=1
 # ADRESSE_IP_LINUX_NET_INTERFACE_2=192.168.1.124
 # ADRESSE_IP_LINUX_NET_INTERFACE_3=192.168.1.125
 # ADRESSE_IP_LINUX_NET_INTERFACE_4=192.168.1.126
-# --------------------------------------------------------------------------------------------------------------------------------------------
 
-#			MAPPING des répertoires d'installation de gitlab dans les conteneurs DOCKER, avec des répertoires de l'hôte DOCKER				 #
-# --------------------------------------------------------------------------------------------------------------------------------------------
-# 
+export OPSTIMESTAMP=`date +"%d-%m-%Y-time-%Hh-%Mm-%Ss"`
+# ---------------------------------------
+# - répertoires  dans l'hôte docker
+# ---------------------------------------
+
+export REP_GESTION_CONTENEURS_DOCKER=/conteneurs-docker
 # ---------------------------------------
 # - répertoires d'installation de gitlab
 # ---------------------------------------
@@ -30,9 +32,21 @@ GITLAB_CONFIG_DIR=/etc/gitlab
 GITLAB_DATA_DIR=/var/opt/gitlab
 GITLAB_LOG_DIR=/var/log/gitlab
 # ---------------------------------------
-# - répertoires  dans l'hôte docker
+# - répertoires Girofle
 # ---------------------------------------
-export REP_GESTION_CONTENEURS_DOCKER=/conteneurs-docker
+# - répertoire dédié au conteneur géré dans cette suite d'opérations
+# cf. demander_chemin_repertoire_giroflebckup ()
+# export REP_GIROFLE_CONTENEUR_DOCKER=$REP_GESTION_CONTENEURS_DOCKER/noeud-gitlab-$GITLAB_INSTANCE_NUMBER
+export REP_GIROFLE_CONTENEUR_DOCKER
+# - répertoire dédié au backups du conteneur géré dans cette suite d'opérations
+export REP_BCKUP_CONTENEUR_DOCKER=$REP_GIROFLE_CONTENEUR_DOCKER/bckups
+# - répertoire qui sera utilisé pour le backup en cours du conteneur géré dans cette suite d'opérations
+export REP_BCKUP_COURANT=$REP_BCKUP_CONTENEUR_DOCKER/$OPSTIMESTAMP
+
+# --------------------------------------------------------------------------------------------------------------------------------------------
+#			MAPPING des répertoires d'installation de gitlab dans les conteneurs DOCKER, avec des répertoires de l'hôte DOCKER				 #
+# --------------------------------------------------------------------------------------------------------------------------------------------
+# 
 # - répertoires associés
 CONTENEUR_GITLAB_MAPPING_HOTE_CONFIG_DIR=$REP_GESTION_CONTENEURS_DOCKER/noeud-gitlab-$GITLAB_INSTANCE_NUMBER/config
 CONTENEUR_GITLAB_MAPPING_HOTE_DATA_DIR=$REP_GESTION_CONTENEURS_DOCKER/noeud-gitlab-$GITLAB_INSTANCE_NUMBER/data
@@ -43,6 +57,35 @@ CONTENEUR_GITLAB_MAPPING_HOTE_LOG_DIR=$REP_GESTION_CONTENEURS_DOCKER/noeud-gitla
 # sudo mkdir -p $CONTENEUR_GITLAB_MAPPING_HOTE_DATA_DIR
 # sudo mkdir -p $CONTENEUR_GITLAB_MAPPING_HOTE_LOG_DIR
 ##############################################################################################################################################
+
+# --------------------------------------------------------------------------------------------------------------------------------------------
+##############################################################################################################################################
+#########################################							FONCTIONS						##########################################
+##############################################################################################################################################
+# --------------------------------------------------------------------------------------------------------------------------------------------
+
+# afind ed emander interactivement à l'utilisatuer, d'idiquer le répertoire dédié au conteneur de l'isntance Gitlab.
+demander_chemin_repertoire_giroflebckup () {
+
+	echo "Dans le répertoire [$REP_GESTION_CONTENEURS_DOCKER], Quel est le "
+	echo "nom du répertoire girofle de l'instance Gitlab que vous souhaitez backupper?"
+	echo " "
+	echo "C'est l'un des suivants:"
+	echo " "
+	ll $REP_GESTION_CONTENEURS_DOCKER
+	echo " "
+	echo " Part défaut, le répertoire girofle choisi sera:"
+	echo " "
+	ls -t $REP_GESTION_CONTENEURS_DOCKER | head -1
+	echo " "
+	read REP_GIROFLE_INDIQUE
+	if [ "x$REP_GIROFLE_INDIQUE" = "x" ]; then
+       REP_GIROFLE_INDIQUE=$(ls -t $REP_GESTION_CONTENEURS_DOCKER | head -1)
+	fi
+	
+	REP_GIROFLE_CONTENEUR_DOCKER=$REP_GIROFLE_INDIQUE
+	echo " le répertoire de backup qui sera utilisé pour ce backup est: $REP_GIROFLE_INDIQUE/$REP_BCKUP";
+}
 
 # - hostname:  archiveur-prj-pms.io
 
@@ -58,10 +101,14 @@ CONTENEUR_GITLAB_MAPPING_HOTE_LOG_DIR=$REP_GESTION_CONTENEURS_DOCKER/noeud-gitla
 # Mais maintenant, j'utilise le nom d'hôte de l'OS, pour régler la question du nom de domaine ppour accéder à l'instance gitlab en mode Web.
 # export NOMDHOTE=archiveur-prj-pms.io
 # sudo docker run --detach --hostname $HOSTNAME --publish $ADRESSE_IP_SRV_GITLAB:433:443 --publish $ADRESSE_IP_SRV_GITLAB:80:80 --publish 2227:22 --name conteneur-kytes.io.gitlab.$GITLAB_INSTANCE_NUMBER --restart always --volume $CONTENEUR_GITLAB_MAPPING_HOTE_CONFIG_DIR:$GITLAB_CONFIG_DIR --volume $CONTENEUR_GITLAB_MAPPING_HOTE_LOG_DIR:$GITLAB_LOG_DIR --volume $CONTENEUR_GITLAB_MAPPING_HOTE_DATA_DIR:$GITLAB_DATA_DIR gitlab/gitlab-ce:latest
-export OPSTIMESTAMP=`date +"%d-%m-%Y-time-%Hh-%Mm-%Ss"`
-export REP_BCKUP_CONTENEURS_DOCKER=$REP_GESTION_CONTENEURS_DOCKER/bckups
-export REP_BCKUP_COURANT=$REP_GESTION_CONTENEURS_DOCKER/bckups/$OPSTIMESTAMP
 
+
+# --------------------------------------------------------------------------------------------------------------------------------------------
+##############################################################################################################################################
+#########################################							OPERATIONS						##########################################
+##############################################################################################################################################
+# --------------------------------------------------------------------------------------------------------------------------------------------
+#
 rm -rf $REP_BCKUP_COURANT
 mkdir -p $REP_BCKUP_COURANT/log
 mkdir -p $REP_BCKUP_COURANT/data

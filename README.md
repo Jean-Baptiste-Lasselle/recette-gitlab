@@ -80,36 +80,36 @@ echo " provision-girofle-  TERMINEE - " >> $NOMFICHIERLOG
 # [$REP_GESTION_CONTENEURS_DOCKER]
 #				| 
 #				| 
-# 		[$REP_GESTION_CONTENEURS_DOCKER/noeud-gitlab-$GITLAB_INSTANCE_NUMBER]
-# 											|
-# 											|__ mapping-volumes
-# 											|	   	  |__ data
-# 											|	   	  |__ config
-# 											|	   	  |__ log
-# 											|
-# 											|
-# 											|__ bckups
-# 											|	   |
-# 											|	   |__ unedate/
-# 											|	   |	  |__ data
-# 											|	   |	  |__ config
-# 											|	   |	  |__ log
-# 											|	   |	  |
-# 											|	   |	  |
-# 											|	   |
-# 											|	   |
-# 											|	   |__ uneautredate/
-# 											|	   |	  |__ data
-# 											|	   |	  |__ config
-# 											|	   |	  |__ log
-# 											|	   |	  |
-# 											|	   |	  |
-# 											|	   |
-# 											|	   |
-# 											|	   
-# 											|	      
+# 		[noeud-gitlab-$GITLAB_INSTANCE_NUMBER]
+# 						|
+# 						|__ mapping-volumes
+# 						|	   	  |__ data
+# 						|	   	  |__ config
+# 						|	   	  |__ log
+# 						|
+# 						|
+# 						|__ bckups
+# 						|	   |
+# 						|	   |__ unedate/
+# 						|	   |	  |__ data
+# 						|	   |	  |__ config
+# 						|	   |	  |__ log
+# 						|	   |	  |
+# 						|	   |	  |
+# 						|	   |
+# 						|	   |
+# 						|	   |__ uneautredate/
+# 						|	   |	  |__ data
+# 						|	   |	  |__ config
+# 						|	   |	  |__ log
+# 						|	   |	  |
+# 						|	   |	  |
+# 						|	   |
+# 						|	   |
+# 						|	   
+# 						|	      
 #    
-#    
+#    => les bckups devront être stockés dans [$REP_GESTION_CONTENEURS_DOCKER/noeud-gitlab-$GITLAB_INSTANCE_NUMBER/bckups]
 #    
 ```
 
