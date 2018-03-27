@@ -113,12 +113,17 @@ echo " provision-girofle-  TERMINEE - " >> $NOMFICHIERLOG
 
 * Dépendances entre variables d'env.
 
-Le fichier `./operations-std/serveur/restore.sh`, est pour le moment le point exact est fait l'association entre: 
+Le fichier `./operations-std/serveur/restore.sh`, est pour le moment le point exact où est faite l'association entre: 
 
 ```
- NOM_CONTENEUR_DOCKER <=> noms du répertoire dédié au conteneur $NOM_CONTENEUR_DOCKER (exemple: [$REP_GESTION_CONTENEURS_DOCKER/noeud-gitlab-$GITLAB_INSTANCE_NUMBER])
+ $NOM_CONTENEUR_DOCKER <=> $REP_GIROFLE_CONTENEUR_DOCKER
 ```
-est faite.
+`$REP_GIROFLE_CONTENEUR_DOCKER` étant le nom du répertoire dédié au conteneur $NOM_CONTENEUR_DOCKER, exemple: 
+
+```
+export REP_GIROFLE_CONTENEUR_DOCKER=$REP_GESTION_CONTENEURS_DOCKER/noeud-gitlab-$GITLAB_INSTANCE_NUMBER
+```
+
 
 * à implémenter:
 
