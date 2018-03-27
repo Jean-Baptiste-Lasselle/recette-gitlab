@@ -1,5 +1,8 @@
 # Recette provision instance gitlab rapide
+
 Cette recette provisionne un pseudo système, qui à l'utilisation se réduits à utiliser des scripts tous situés dans le même répertoire.
+
+J'ai accessoirement baptisé le pseudo-système "[Girofle](#)".
 
 Ce pseudo système permet de créer autant de conteneurs [Gitlab](https://gitlab.io) qu'il y a d'interfaces réseau dans le système sous jacent (supporté pour léinstant: centos 7)dans la même VM, 
 et de pouvoir chacun:
@@ -42,6 +45,8 @@ echo " provision-girofle-  TERMINEE - " >> $NOMFICHIERLOG
 
 ```
 <!-- # 2./ il faut redémarrer le système? (me souvient plus...) --> 
+
+
 
 # stdopsbckups
 
